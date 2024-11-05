@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dynamic Currency Converter</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        input {
+            margin: 10px 0;
+            padding: 10px;
+            width: 200px;
+        }
+        button {
+            padding: 10px 15px;
+            font-size: 16px;
+            margin-top: 10px;
+        }
+        .result {
+            margin-top: 20px;
+            font-weight: bold;
+        }
+        .source {
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Dynamic Currency Converter</h1>
+    <div id="sourcesContainer">
+        <div class="source">
+            <input type="number" placeholder="Enter amount" required>
+            <input type="number" placeholder="Enter conversion rate to EGP" required>
+            <button onclick="removeSource(this)">Remove</button>
+        </div>
+    </div>
+    <button onclick="addSource()">Add Source</button>
+    <button onclick="calculateTotal()">Calculate Total</button>
+
+    <div class="result" id="result"></div>
+
+    <script>
+        function addSource() {
+            const sourcesContainer = document.getElementById('sourcesContainer');
+            const newSource = document.createElement('div');
+            newSource.className = 'source';
+            newSource.innerHTML = `
+                <input type="number" placeholder="Enter amount" required>
+                <input type="number" placeholder="Enter conversion rate to EGP" required>
+                <button onclick="removeSource(this)">Remove</button>
+            `;
+            sourcesContainer.appendChild(newSource);
+        }
+
+        function removeSource(button) {
+            const sourceDiv = button.parentElement;
+            sourceDiv.remove();
+        }
+
+        function calculateTotal() {
+            const sources = document.querySelectorAll('#sourcesContainer .source');
+            let totalEGP = 0;
+
+            sources.forEach(source => {
+                const amountInput = source.querySelector('input[type="number"]:nth-child(1)');
+                const rateInput = source.querySelector('input[type="number"]:nth-child(2)');
+                const amount = parseFloat(amountInput.value);
+                const rate = parseFloat(rateInput.value);
+
+                if (!isNaN(amount) && !isNaN(rate)) {
+                    totalEGP += amount * rate;
+                }
+            });
+
+            document.getElementById('result').innerText = `Total Amount in EGP: EGP ${totalEGP.toFixed(2)}`;
+        }
+    </script>
+</body>
+</html>
