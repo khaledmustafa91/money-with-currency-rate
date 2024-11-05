@@ -1,68 +1,81 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dynamic Currency Converter</title>
+    <title>Money Tracker</title>
     <style>
         body {
             font-family: Arial, sans-serif;
             margin: 20px;
         }
+
         input {
             margin: 10px 0;
             padding: 10px;
             width: 200px;
         }
+
         button {
             padding: 10px 15px;
             font-size: 16px;
             margin-top: 10px;
         }
+
         .result {
             margin-top: 20px;
             font-weight: bold;
         }
+
         .source {
             margin-bottom: 10px;
         }
     </style>
 </head>
+
 <body>
-    <h1>Dynamic Currency Converter</h1>
-    <div id="sourcesContainer">
-        <div class="source">
-            <input type="number" placeholder="Enter amount" required>
-            <input type="number" placeholder="Enter conversion rate to EGP" required>
-            <button onclick="removeSource(this)">Remove</button>
-        </div>
-    </div>
+    <h1>Money Tracker</h1>
+    <div id="sourcesContainer"></div>
     <button onclick="addSource()">Add Source</button>
     <button onclick="calculateTotal()">Calculate Total</button>
+    <button onclick="clearData()">Clear Data</button>
 
     <div class="result" id="result"></div>
 
     <script>
-        function addSource() {
+        // Load saved sources from localStorage
+        function loadSources() {
+            const sources = JSON.parse(localStorage.getItem('moneyTrackerSources')) || [];
+            sources.forEach(source => {
+                addSource(source.amount, source.rate);
+            });
+        }
+
+        // Add a new source
+        function addSource(amount = '', rate = '') {
             const sourcesContainer = document.getElementById('sourcesContainer');
             const newSource = document.createElement('div');
             newSource.className = 'source';
             newSource.innerHTML = `
-                <input type="number" placeholder="Enter amount" required>
-                <input type="number" placeholder="Enter conversion rate to EGP" required>
+                <input type="number" placeholder="Enter amount" value="${amount}" required>
+                <input type="number" placeholder="Enter conversion rate" value="${rate}" required>
                 <button onclick="removeSource(this)">Remove</button>
             `;
             sourcesContainer.appendChild(newSource);
         }
 
+        // Remove a source
         function removeSource(button) {
             const sourceDiv = button.parentElement;
             sourceDiv.remove();
+            saveSources(); // Save changes after removal
         }
 
+        // Calculate total
         function calculateTotal() {
             const sources = document.querySelectorAll('#sourcesContainer .source');
-            let totalEGP = 0;
+            let total = 0;
 
             sources.forEach(source => {
                 const amountInput = source.querySelector('input[type="number"]:nth-child(1)');
@@ -71,12 +84,43 @@
                 const rate = parseFloat(rateInput.value);
 
                 if (!isNaN(amount) && !isNaN(rate)) {
-                    totalEGP += amount * rate;
+                    total += amount * rate;
                 }
             });
 
-            document.getElementById('result').innerText = `Total Amount in EGP: EGP ${totalEGP.toFixed(2)}`;
+            document.getElementById('result').innerText = `Total Amount: ${total.toFixed(2)}`;
+            saveSources(); // Save sources after calculation
         }
+
+        // Save sources to localStorage
+        function saveSources() {
+            const sources = [];
+            const sourceElements = document.querySelectorAll('#sourcesContainer .source');
+
+            sourceElements.forEach(source => {
+                const amountInput = source.querySelector('input[type="number"]:nth-child(1)');
+                const rateInput = source.querySelector('input[type="number"]:nth-child(2)');
+                const amount = amountInput.value;
+                const rate = rateInput.value;
+
+                if (amount && rate) {
+                    sources.push({ amount, rate });
+                }
+            });
+
+            localStorage.setItem('moneyTrackerSources', JSON.stringify(sources));
+        }
+
+        // Clear all data
+        function clearData() {
+            localStorage.removeItem('moneyTrackerSources');
+            document.getElementById('sourcesContainer').innerHTML = '';
+            document.getElementById('result').innerText = '';
+        }
+
+        // Load sources on page load
+        window.onload = loadSources;
     </script>
 </body>
+
 </html>
