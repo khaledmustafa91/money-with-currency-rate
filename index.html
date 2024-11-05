@@ -46,7 +46,7 @@
     <script>
         // Load saved sources from localStorage
         function loadSources() {
-            const sources = JSON.parse(localStorage.getItem('moneyTrackerSources')) || [];
+            const sources = JSON.parse(localStorage.getItem('moneyTrackerSourcesRate')) || [];
             sources.forEach(source => {
                 addSource(source.amount, source.rate);
             });
@@ -108,12 +108,12 @@
                 }
             });
 
-            localStorage.setItem('moneyTrackerSources', JSON.stringify(sources));
+            localStorage.setItem('moneyTrackerSourcesRate', JSON.stringify(sources));
         }
 
         // Clear all data
         function clearData() {
-            localStorage.removeItem('moneyTrackerSources');
+            localStorage.removeItem('moneyTrackerSourcesRate');
             document.getElementById('sourcesContainer').innerHTML = '';
             document.getElementById('result').innerText = '';
         }
